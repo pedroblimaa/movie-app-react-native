@@ -1,4 +1,4 @@
-import {ImageBackground, Pressable, StyleSheet, Text, TouchableOpacity, View} from 'react-native'
+import {ImageBackground, Pressable, StyleSheet, Text, View} from 'react-native'
 import React from 'react'
 import {Tabs} from "expo-router";
 import {Image} from "expo-image";
