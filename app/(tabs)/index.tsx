@@ -7,6 +7,7 @@ import SearchBar from "@/components/SearchBar";
 import {useRouter} from "expo-router";
 import useFetch from "@/services/useFetch";
 import {fetchMovies} from "@/services/api";
+import MovieCard from "@/components/MovieCard";
 
 const Index = () => {
     const router = useRouter()
@@ -14,7 +15,7 @@ const Index = () => {
         data: movies,
         loading: moviesLoading,
         error: moviesError
-    } = useFetch<any>(fetchMovies)
+    } = useFetch<any>(() => fetchMovies(''))
 
     const renderBody = () => {
         if (moviesLoading) {
@@ -40,13 +41,22 @@ const Index = () => {
                     placeholder="Search for a movie"
                 />
 
-                <>
-                    <Text style={styles.searchText}>Latest Movies</Text>
+                <Text style={styles.searchText}>Latest Movies</Text>
 
-                    <FlatList data={movies} renderItem={({item}) => (
-                        <Text key={item.id} style={{color: '#ffffff'}}>{item.title}</Text>
-                    )}/>
-                </>
+                <FlatList
+                    data={movies}
+                    renderItem={({item}) => <MovieCard movie={item}/>}
+                    keyExtractor={(item) => item.id}
+                    numColumns={3}
+                    columnWrapperStyle={{
+                        justifyContent: 'flex-start',
+                        gap: 20,
+                        paddingRight: 10,
+                        marginBottom: 10
+                    }}
+                    style={styles.flatList}
+                    scrollEnabled={false}
+                />
             </View>
         )
     }
@@ -99,6 +109,10 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: 'bold',
         color: colors.light["100"],
-        marginBottom: 12
+        marginBottom: 12,
+        marginTop: 12
+    },
+    flatList: {
+        paddingBottom: 128
     }
 })
