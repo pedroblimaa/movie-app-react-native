@@ -1,13 +1,13 @@
 import {ActivityIndicator, FlatList, Image, ScrollView, StyleSheet, Text, View} from 'react-native'
 import React from 'react'
 import {colors} from "@/constants/colors";
-import {images} from "@/constants/images";
 import {icons} from "@/constants/icons";
 import SearchBar from "@/components/SearchBar";
 import {useRouter} from "expo-router";
 import useFetch from "@/services/useFetch";
 import {fetchMovies} from "@/services/api";
 import MovieCard from "@/components/MovieCard";
+import BackgroundImage from "@/components/BackgroundImage";
 
 const Index = () => {
     const router = useRouter()
@@ -63,7 +63,7 @@ const Index = () => {
 
     return (
         <View style={styles.container}>
-            <Image source={images.bg} style={styles.topBg}/>
+            <BackgroundImage/>
             <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}
                         contentContainerStyle={{minHeight: '100%', paddingBottom: 10}}>
                 <Image source={icons.logo} style={styles.logo}/>
@@ -78,11 +78,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: colors.primary,
-    },
-    topBg: {
-        position: 'absolute',
-        width: '100%',
-        zIndex: 0,
     },
     scrollView: {
         flex: 1,

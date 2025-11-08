@@ -5,10 +5,12 @@ import {icons} from "@/constants/icons";
 
 interface SearchBarProps {
     placeholder: string,
-    onPress?: () => void
+    onPress?: () => void,
+    value: string,
+    onChangeText: (text: string) => void,
 }
 
-const SearchBar = ({placeholder, onPress}: SearchBarProps) => {
+const SearchBar = ({placeholder, onPress, value, onChangeText}: SearchBarProps) => {
 
     return (
         <View style={styles.container}>
@@ -16,10 +18,10 @@ const SearchBar = ({placeholder, onPress}: SearchBarProps) => {
             <TextInput
                 onPress={onPress}
                 placeholder={placeholder}
-                value=""
-                onChangeText={() => {
-                }}
+                value={value}
+                onChangeText={onChangeText}
                 placeholderTextColor="#AB85DB"
+                style={{color: 'white', width: '100%'}}
             />
         </View>
     )
