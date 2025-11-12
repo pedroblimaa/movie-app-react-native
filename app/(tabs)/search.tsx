@@ -1,13 +1,13 @@
-import {ActivityIndicator, FlatList, Image, StyleSheet, Text, View} from 'react-native'
-import React, {useEffect, useState} from 'react'
-import {colors} from "@/constants/colors";
-import BackgroundImage from "@/components/BackgroundImage";
-import useFetch from "@/services/useFetch";
-import {fetchMovies} from "@/services/api";
-import MovieCard from "@/components/MovieCard";
-import {icons} from "@/constants/icons";
-import SearchBar from "@/components/SearchBar";
-import {updateSearchCount} from "@/services/firebase";
+import BackgroundImage from "@/components/BackgroundImage"
+import MovieCard from "@/components/MovieCard"
+import SearchBar from "@/components/SearchBar"
+import { colors } from "@/constants/colors"
+import { icons } from "@/constants/icons"
+import { fetchMovies } from "@/services/api"
+import { getTopSearchedMovies, updateSearchCount } from "@/services/firebase"
+import useFetch from "@/services/useFetch"
+import React, { useEffect, useState } from 'react'
+import { ActivityIndicator, FlatList, Image, StyleSheet, Text, View } from 'react-native'
 
 const Search = () => {
     const [searchQuery, setSearchQuery] = useState('');
@@ -20,8 +20,11 @@ const Search = () => {
     } = useFetch<any>(() => fetchMovies(searchQuery), false)
 
     useEffect(() => {
-        console.log('getting db')
-        updateSearchCount(searchQuery, movies?.[0])
+        if(movies?.length > 0) {
+            updateSearchCount(searchQuery, movies[0])
+        }
+
+        getTopSearchedMovies()
 
         const loadTimeoutFunction = setTimeout(async () => {
             if (searchQuery.trim()) {

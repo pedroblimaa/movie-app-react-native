@@ -1,7 +1,7 @@
 // Import the functions you need from the SDKs you need
-import {initializeApp} from "firebase/app"
-import {Movie} from "@/interfaces/Movie"
-import {collection, getDocs, getFirestore} from "@firebase/firestore"
+import { Movie } from "@/interfaces/Movie"
+import { collection, doc, DocumentData, getDocs, getFirestore, query, QuerySnapshot, setDoc, updateDoc, where } from "@firebase/firestore"
+import { initializeApp } from "firebase/app"
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -22,12 +22,56 @@ const app = initializeApp(firebaseConfig)
 const db = getFirestore(app)
 
 export const updateSearchCount = async (searchTerm: string, movie: Movie) => {
-    const querySnapshot = await getDocs(collection(db, 'metrics'))
-    const result: any[] = [];
+    try {
+        const q = query(
+            collection(db, 'metrics'),
+            where('searchTerm', '==', searchTerm)
+        )
+
+        const querySnapshot = await getDocs(q)
+        const result = getQueryResult<any>(querySnapshot)
+
+        if (result.length > 0) {
+            const existingMovie = result[0]
+            await updateDoc(doc(db, 'metrics', existingMovie.id), {
+                searchCount: existingMovie.searchCount + 1,
+                lastSearched: new Date().toISOString(),
+                searchTerm
+            })
+        } else {
+            const newDocRef = doc(collection(db, 'metrics'))
+            await setDoc(newDocRef, {
+                movieId: movie.id,
+                title: movie.title,
+                searchCount: 1,
+                lastSearched: new Date().toISOString(),
+                searchTerm,
+                poster_url: `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+            })
+        }
+    } catch (error) {
+        console.error('Error updating search count:', error)
+        throw error
+    }
+}
+
+export const getTopSearchedMovies = async () => {
+    const docs = query(collection(db, 'metrics'))
+    const querySnapshot = await getDocs(docs)
+    const result = getQueryResult<any>(querySnapshot)
+
+    const sortedResult = result.sort((a, b) => b.searchCount - a.searchCount).slice(0, 10).map(movie => ({title: movie.title, searchCount: movie.searchCount}))
+    console.log('top searched movies:', sortedResult)
+
+    return sortedResult
+}
+
+const getQueryResult = <T>(querySnapshot: QuerySnapshot<DocumentData, DocumentData>): T[] => {
+    const result: any[] = []
 
     querySnapshot.forEach((doc) => {
-        result.push({id: doc.id, ...doc.data()});
-    });
+        result.push({ id: doc.id, ...doc.data() })
+    })
 
-    console.log(result);
+    return result
 }
