@@ -1,16 +1,25 @@
-import {ActivityIndicator, FlatList, Image, ScrollView, StyleSheet, Text, View} from 'react-native'
+import BackgroundImage from "@/components/BackgroundImage"
+import MovieCard from "@/components/MovieCard"
+import SearchBar from "@/components/SearchBar"
+import TrendingCard from "@/components/TrendingCard"
+import { colors } from "@/constants/colors"
+import { icons } from "@/constants/icons"
+import { fetchMovies } from "@/services/api"
+import { getTrendingMovies } from '@/services/firebase'
+import useFetch from "@/services/useFetch"
+import { useRouter } from "expo-router"
 import React from 'react'
-import {colors} from "@/constants/colors";
-import {icons} from "@/constants/icons";
-import SearchBar from "@/components/SearchBar";
-import {useRouter} from "expo-router";
-import useFetch from "@/services/useFetch";
-import {fetchMovies} from "@/services/api";
-import MovieCard from "@/components/MovieCard";
-import BackgroundImage from "@/components/BackgroundImage";
+import { ActivityIndicator, FlatList, Image, ScrollView, StyleSheet, Text, View } from 'react-native'
 
 const Index = () => {
     const router = useRouter()
+
+    const {
+        data: trendingMovies,
+        loading: trendingLoading,
+        error: trendingError
+    } = useFetch<any>(getTrendingMovies)
+
     const {
         data: movies,
         loading: moviesLoading,
@@ -18,7 +27,7 @@ const Index = () => {
     } = useFetch<any>(() => fetchMovies(''))
 
     const renderBody = () => {
-        if (moviesLoading) {
+        if (moviesLoading || trendingLoading) {
             return (
                 <ActivityIndicator
                     size="large"
@@ -28,9 +37,9 @@ const Index = () => {
             )
         }
 
-        if (moviesError) {
+        if (moviesError || trendingError) {
             return (
-                <Text>Error: {moviesError.message}</Text>
+                <Text>Error: {moviesError?.message || trendingError?.message}</Text>
             )
         }
 
@@ -41,11 +50,26 @@ const Index = () => {
                     placeholder="Search for a movie"
                 />
 
+                {trendingMovies && trendingMovies.length > 0 && (
+                    <>
+                        <Text style={styles.searchText}>Trending Movies</Text>
+                        <FlatList
+                            horizontal
+                            showsHorizontalScrollIndicator={false}
+                            ItemSeparatorComponent={() => <View style={{ width: 10 }} />}
+                            style={{ marginBottom: 16, marginTop: 12 }}
+                            data={trendingMovies}
+                            renderItem={({ item, index }) => <TrendingCard movie={item} index={index} />}
+                            keyExtractor={(_, index) => index.toString()}
+                        />
+                    </>
+                )}
+
                 <Text style={styles.searchText}>Latest Movies</Text>
 
                 <FlatList
                     data={movies}
-                    renderItem={({item}) => <MovieCard movie={item}/>}
+                    renderItem={({ item }) => <MovieCard movie={item} />}
                     keyExtractor={(item) => item.id}
                     numColumns={3}
                     columnWrapperStyle={{
@@ -63,10 +87,10 @@ const Index = () => {
 
     return (
         <View style={styles.container}>
-            <BackgroundImage/>
+            <BackgroundImage />
             <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}
-                        contentContainerStyle={{minHeight: '100%', paddingBottom: 10}}>
-                <Image source={icons.logo} style={styles.logo}/>
+                contentContainerStyle={{ minHeight: '100%', paddingBottom: 10 }}>
+                <Image source={icons.logo} style={styles.logo} />
 
                 {renderBody()}
             </ScrollView>

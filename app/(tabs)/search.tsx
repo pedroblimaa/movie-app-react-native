@@ -10,7 +10,7 @@ import React, { useEffect, useState } from 'react'
 import { ActivityIndicator, FlatList, Image, StyleSheet, Text, View } from 'react-native'
 
 const Search = () => {
-    const [searchQuery, setSearchQuery] = useState('');
+    const [searchQuery, setSearchQuery] = useState('')
     const {
         data: movies,
         loading,
@@ -18,13 +18,13 @@ const Search = () => {
         refetch: loadMovies,
         reset
     } = useFetch<any>(() => fetchMovies(searchQuery), false)
+    getTopSearchedMovies()
 
     useEffect(() => {
-        if(movies?.length > 0) {
-            updateSearchCount(searchQuery, movies[0])
+        if (movies?.length > 0) {
+            updateSearchCount(searchQuery, movies.find((movie: any) => !!movie.title))
         }
 
-        getTopSearchedMovies()
 
         const loadTimeoutFunction = setTimeout(async () => {
             if (searchQuery.trim()) {
@@ -40,10 +40,10 @@ const Search = () => {
 
     return (
         <View style={styles.container}>
-            <BackgroundImage/>
+            <BackgroundImage />
             <FlatList
                 data={movies}
-                renderItem={({item}) => <MovieCard movie={item}/>}
+                renderItem={({ item }) => <MovieCard movie={item} />}
                 keyExtractor={(item) => item.id.toString()}
                 style={styles.flatList}
                 numColumns={3}
@@ -52,14 +52,14 @@ const Search = () => {
                     gap: 16,
                     marginVertical: 16
                 }}
-                contentContainerStyle={{paddingBottom: 100}}
+                contentContainerStyle={{ paddingBottom: 100 }}
                 ListHeaderComponent={
                     <>
                         <View style={styles.listHeader}>
-                            <Image source={icons.logo} style={{width: 48, height: 40}}/>
+                            <Image source={icons.logo} style={{ width: 48, height: 40 }} />
                         </View>
 
-                        <View style={{marginVertical: 5}}>
+                        <View style={{ marginVertical: 5 }}>
                             <SearchBar
                                 placeholder="Search movies..."
                                 value={searchQuery}
@@ -68,7 +68,7 @@ const Search = () => {
                         </View>
 
                         {loading && (
-                            <ActivityIndicator size="large" color="#0000ff" style={{marginVertical: 3}}/>
+                            <ActivityIndicator size="large" color="#0000ff" style={{ marginVertical: 3 }} />
                         )}
 
                         {error && (
@@ -80,15 +80,15 @@ const Search = () => {
                         {!loading && !error && searchQuery.trim() && movies?.length > 0 && (
                             <Text style={styles.resultMsg}>
                                 Search results for {' '}
-                                <Text style={{color: colors.accent}}>{searchQuery}</Text>
+                                <Text style={{ color: colors.accent }}>{searchQuery}</Text>
                             </Text>
                         )}
                     </>
                 }
                 ListEmptyComponent={
                     !loading && !error ? (
-                        <View style={{marginTop: 40, paddingHorizontal: 20}}>
-                            <Text style={{textAlign: 'center', color: 'gray'}}>
+                        <View style={{ marginTop: 40, paddingHorizontal: 20 }}>
+                            <Text style={{ textAlign: 'center', color: 'gray' }}>
                                 {searchQuery.trim() ? 'No movies found' : 'Search for a movie'}
                             </Text>
                         </View>

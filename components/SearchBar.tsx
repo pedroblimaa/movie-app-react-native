@@ -1,13 +1,13 @@
-import {Image, StyleSheet, TextInput, View} from 'react-native'
+import { colors } from "@/constants/colors"
+import { icons } from "@/constants/icons"
 import React from 'react'
-import {colors} from "@/constants/colors";
-import {icons} from "@/constants/icons";
+import { Image, StyleSheet, TextInput, View } from 'react-native'
 
 interface SearchBarProps {
     placeholder: string,
+    value?: string,
     onPress?: () => void,
-    value: string,
-    onChangeText: (text: string) => void,
+    onChangeText?: (text: string) => void,
 }
 
 const SearchBar = ({placeholder, onPress, value, onChangeText}: SearchBarProps) => {

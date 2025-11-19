@@ -11,9 +11,10 @@ A React Native movie app built with Expo Router and Firebase.
 
 ## Setup
 
-1. Create a `.env` file with your TMDB API key:
+1. Create a `.env` file with your keys:
    ```
    EXPO_PUBLIC_MOVIE_API_KEY=your_api_key_here
+   EXPO_FIREBASE_API_KEY=your_firebase_api_key_here
    ```
 
 2. Install dependencies and start:
