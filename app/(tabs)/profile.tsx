@@ -1,12 +1,28 @@
-import {StyleSheet, Text, View} from 'react-native'
+import { colors } from '@/constants/colors'
+import { icons } from '@/constants/icons'
 import React from 'react'
+import { Image, StyleSheet, Text, View } from 'react-native'
 
 const Profile = () => {
     return (
-        <View>
-            <Text>Profile</Text>
+        <View style={styles.container}>
+
+            <Image source={icons.person} style={{ width: 40, height: 40 }} tintColor='#fff' />
+            <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>Profile</Text>
         </View>
     )
 }
 export default Profile
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        flexDirection: 'column',
+        gap: 5,
+        width: '100%',
+        height: '100%',
+        backgroundColor: colors.primary,
+        paddingHorizontal: 10,
+    }
+})

@@ -1,6 +1,7 @@
 // Import the functions you need from the SDKs you need
+import { urls } from "@/constants/urls"
 import { Movie } from "@/interfaces/Movie"
-import { collection, deleteDoc, doc, DocumentData, getDocs, getFirestore, limit, orderBy, query, QuerySnapshot, setDoc, updateDoc, where } from "@firebase/firestore"
+import { collection, doc, DocumentData, getDocs, getFirestore, limit, orderBy, query, QuerySnapshot, setDoc, updateDoc, where } from "@firebase/firestore"
 import { initializeApp } from "firebase/app"
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -46,7 +47,7 @@ export const updateSearchCount = async (searchTerm: string, movie: Movie) => {
                 searchCount: 1,
                 lastSearched: new Date().toISOString(),
                 searchTerm,
-                poster_url: `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+                poster_url: `${urls.imageBaseUrl}${movie.poster_path}`
             })
         }
     } catch (error) {
@@ -89,31 +90,6 @@ export const getTrendingMovies = async (): Promise<Partial<Movie>[]> => {
 
     return movies.slice(0, 5)
 }
-
-export const deleteRowsWithoutTitle = async () => {
-    try {
-        const querySnapshot = await getDocs(collection(db, 'metrics'))
-        const docsToDelete: string[] = []
-
-        querySnapshot.forEach((document) => {
-            const data = document.data()
-            if (!data.title || data.title.trim() === '' || !data.poster_path) {
-                docsToDelete.push(document.id)
-            }
-        })
-
-        await Promise.all(
-            docsToDelete.map(docId => deleteDoc(doc(db, 'metrics', docId)))
-        )
-
-        console.log(`Deleted ${docsToDelete.length} documents without title`)
-        return { deletedCount: docsToDelete.length, deletedIds: docsToDelete }
-    } catch (error) {
-        console.error('Error deleting documents without title:', error)
-        throw error
-    }
-}
-
 
 const getQueryResult = <T>(querySnapshot: QuerySnapshot<DocumentData, DocumentData>): T[] => {
     const result: any[] = []

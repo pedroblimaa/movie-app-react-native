@@ -12,6 +12,7 @@
       "supportsTablet": true
     },
     "android": {
+      "backgroundColor": "#030014",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/logo.png",
