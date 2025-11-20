@@ -1,8 +1,9 @@
+import LoadingIndicator from '@/components/LoadingIndicator'
 import { colors } from '@/constants/colors'
 import { icons } from '@/constants/icons'
 import { urls } from '@/constants/urls'
 import { IMovieDetails } from '@/interfaces/Movie'
-import { fetchMovieDetails } from '@/services/api'
+import tmdbApi from '@/services/tmdbApi'
 import useFetch from '@/services/useFetch'
 import { router, useLocalSearchParams } from 'expo-router'
 import React from 'react'
@@ -23,11 +24,17 @@ const MovieInfo = ({ label, value }: MovieInfoProps) => (
 
 const MovieDetails = () => {
     const { id } = useLocalSearchParams()
-    const { data: movie, loading } = useFetch<IMovieDetails>(() => fetchMovieDetails(Number(id)))
+    const { data: movie, loading } = useFetch<IMovieDetails>(() => tmdbApi.fetchMovieDetails(Number(id)))
 
-    return (
-        <View style={styles.container}>
-            <ScrollView contentContainerStyle={{ paddingBottom: 80 }}>
+    const getContent = () => {
+        if (loading) {
+            return (
+                <LoadingIndicator />
+            )
+        }
+
+        return (
+            <>
                 <View>
                     <Image source={{ uri: `${urls.imageBaseUrl}${movie?.poster_path}` }} style={{ width: '100%', height: 450 }} resizeMode='cover' />
                 </View>
@@ -56,6 +63,18 @@ const MovieDetails = () => {
 
                     <MovieInfo label='Production Companies' value={movie?.production_companies?.map(pc => pc.name).join(' - ') || 'N/A'} />
                 </View>
+
+            </>
+        )
+    }
+
+
+    return (
+        <View style={styles.container}>
+            <ScrollView contentContainerStyle={{ paddingBottom: 80 }}>
+
+                {getContent()}
+
             </ScrollView>
 
             <TouchableOpacity style={styles.backButton} onPress={() => { router.back() }}>
@@ -101,5 +120,4 @@ const styles = StyleSheet.create({
         paddingVertical: 15,
         width: '100%',
     }
-
 })

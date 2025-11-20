@@ -3,8 +3,8 @@ import MovieCard from "@/components/MovieCard"
 import SearchBar from "@/components/SearchBar"
 import { colors } from "@/constants/colors"
 import { icons } from "@/constants/icons"
-import { fetchMovies } from "@/services/api"
-import { getTopSearchedMovies, updateSearchCount } from "@/services/firebase"
+import fbMovieDb from "@/services/fbMovieDb"
+import tmdbApi from "@/services/tmdbApi"
 import useFetch from "@/services/useFetch"
 import React, { useEffect, useState } from 'react'
 import { ActivityIndicator, FlatList, Image, StyleSheet, Text, View } from 'react-native'
@@ -17,12 +17,12 @@ const Search = () => {
         error,
         refetch: loadMovies,
         reset
-    } = useFetch<any>(() => fetchMovies(searchQuery), false)
-    getTopSearchedMovies()
+    } = useFetch<any>(() => tmdbApi.fetchMovies(searchQuery), false)
+    fbMovieDb.getTopSearchedMovies()
 
     useEffect(() => {
         if (movies?.length > 0) {
-            updateSearchCount(searchQuery, movies.find((movie: any) => !!movie.title))
+            fbMovieDb.updateSearchCount(searchQuery, movies.find((movie: any) => !!movie.title))
         }
 
 

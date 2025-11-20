@@ -1,15 +1,16 @@
 import BackgroundImage from "@/components/BackgroundImage"
+import LoadingIndicator from "@/components/LoadingIndicator"
 import MovieCard from "@/components/MovieCard"
 import SearchBar from "@/components/SearchBar"
 import TrendingCard from "@/components/TrendingCard"
 import { colors } from "@/constants/colors"
 import { icons } from "@/constants/icons"
-import { fetchMovies } from "@/services/api"
-import { getTrendingMovies } from '@/services/firebase'
+import fbMovieDb from "@/services/fbMovieDb"
+import tmdbApi from "@/services/tmdbApi"
 import useFetch from "@/services/useFetch"
 import { useRouter } from "expo-router"
 import React from 'react'
-import { ActivityIndicator, FlatList, Image, ScrollView, StyleSheet, Text, View } from 'react-native'
+import { FlatList, Image, ScrollView, StyleSheet, Text, View } from 'react-native'
 
 const Index = () => {
     const router = useRouter()
@@ -18,22 +19,18 @@ const Index = () => {
         data: trendingMovies,
         loading: trendingLoading,
         error: trendingError
-    } = useFetch<any>(getTrendingMovies)
+    } = useFetch<any>(fbMovieDb.getTrendingMovies)
 
     const {
         data: movies,
         loading: moviesLoading,
         error: moviesError
-    } = useFetch<any>(() => fetchMovies(''))
+    } = useFetch<any>(() => tmdbApi.fetchMovies(''))
 
     const renderBody = () => {
         if (moviesLoading || trendingLoading) {
             return (
-                <ActivityIndicator
-                    size="large"
-                    color="#0000ff"
-                    style={styles.activityIndicator}
-                />
+               <LoadingIndicator />
             )
         }
 

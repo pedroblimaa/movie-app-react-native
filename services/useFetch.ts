@@ -1,4 +1,4 @@
-import {useCallback, useEffect, useState} from "react";
+import { useCallback, useEffect, useState } from "react"
 
 interface UseFetch<T> {
     data: T | null,
@@ -19,23 +19,24 @@ const useFetch = <T>(fetchFunction: () => Promise<T>, autoFetch = true): UseFetc
         setError(null)
     }, [])
 
-    const fetchData = useCallback(async() => {
+    const fetchData = useCallback(async () => {
         try {
-           reset()
+            reset()
+            setLoading(true)
             const result = await fetchFunction()
             setData(result)
         } catch (err) {
             setError(err instanceof Error ? err : new Error('An error occurred'))
         } finally {
-            setLoading(false )
+            setLoading(false)
         }
     }, [fetchFunction, reset])
 
     useEffect(() => {
-        if(autoFetch) {
+        if (autoFetch) {
             fetchData()
         }
-    }, [autoFetch, fetchData]);
+    }, [autoFetch, fetchData])
 
     return { data, loading, error, refetch: fetchData, reset }
 }
