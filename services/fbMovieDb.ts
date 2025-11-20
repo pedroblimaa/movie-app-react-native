@@ -1,7 +1,7 @@
 import firebaseConfig from "@/configs/firebaseConfig"
 import { urls } from "@/constants/urls"
 import { Movie } from "@/interfaces/Movie"
-import { collection, doc, getDocs, limit, orderBy, query, setDoc, updateDoc, where } from "@firebase/firestore"
+import { collection, doc, getDocs, limit, orderBy, query, setDoc, updateDoc, where } from "firebase/firestore"
 
 
 const db = firebaseConfig.db

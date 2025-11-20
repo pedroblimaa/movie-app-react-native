@@ -1,3 +1,4 @@
+import Auth from '@/components/Auth'
 import { colors } from '@/constants/colors'
 import { icons } from '@/constants/icons'
 import React from 'react'
@@ -9,6 +10,8 @@ const Profile = () => {
 
             <Image source={icons.person} style={{ width: 40, height: 40 }} tintColor='#fff' />
             <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>Profile</Text>
+
+            <Auth />
         </View>
     )
 }

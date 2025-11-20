@@ -1,8 +1,9 @@
-import { DocumentData, getFirestore, QuerySnapshot } from "@firebase/firestore"
 import { initializeApp } from "firebase/app"
+import { getAuth } from "firebase/auth"
+import { DocumentData, getFirestore, QuerySnapshot } from "firebase/firestore"
 
 const config = {
-    apiKey: process.env.EXPO_FIREBASE_API_KEY,
+    apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
     authDomain: "movie-app-341b0.firebaseapp.com",
     projectId: "movie-app-341b0",
     storageBucket: "movie-app-341b0.firebasestorage.app",
@@ -11,12 +12,11 @@ const config = {
     measurementId: "G-LCTB7ELW7M"
 }
 
-// Initialize Firebase
 const app = initializeApp(config)
-
 
 const firebaseConfig = {
     db: getFirestore(app),
+    auth: getAuth(app),
 
     getQueryResult: <T>(querySnapshot: QuerySnapshot<DocumentData, DocumentData>): T[] => {
         const result: any[] = []
