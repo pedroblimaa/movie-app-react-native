@@ -5,8 +5,8 @@ import SearchBar from "@/components/SearchBar"
 import TrendingCard from "@/components/TrendingCard"
 import { colors } from "@/constants/colors"
 import { icons } from "@/constants/icons"
-import fbMovieDb from "@/services/fbMovieDb"
-import tmdbApi from "@/services/tmdbApi"
+import fbMovieDbService from "@/services/fbMovieDbService"
+import tmdbApiService from "@/services/tmdbApiService"
 import useFetch from "@/services/useFetch"
 import { useRouter } from "expo-router"
 import React from 'react'
@@ -19,24 +19,26 @@ const Index = () => {
         data: trendingMovies,
         loading: trendingLoading,
         error: trendingError
-    } = useFetch<any>(fbMovieDb.getTrendingMovies)
+    } = useFetch<any>(fbMovieDbService.getTrendingMovies)
 
     const {
         data: movies,
         loading: moviesLoading,
         error: moviesError
-    } = useFetch<any>(() => tmdbApi.fetchMovies(''))
+    } = useFetch<any>(() => tmdbApiService.fetchMovies(''))
 
     const renderBody = () => {
         if (moviesLoading || trendingLoading) {
             return (
-               <LoadingIndicator />
+                <View style={{ marginTop: 40 }}>
+                    <LoadingIndicator />
+                </View>
             )
         }
 
         if (moviesError || trendingError) {
             return (
-                <Text>Error: {moviesError?.message || trendingError?.message}</Text>
+                <Text>Error: {moviesError || trendingError}</Text>
             )
         }
 

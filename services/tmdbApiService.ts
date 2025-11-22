@@ -13,7 +13,7 @@ const endpoints = {
     movieDetails: (movieId: number) => `${TMDB_CONFIG.BASE_URL}/movie/${movieId}`,
 }
 
-const tmdbApi = {
+const tmdbApiService = {
     fetchMovies: async (query?: string) => {
         const endpoint = query ? endpoints.searchMovies(query) : endpoints.discoverMovies()
 
@@ -48,4 +48,4 @@ const tmdbApi = {
     }
 }
 
-export default tmdbApi
+export default tmdbApiService

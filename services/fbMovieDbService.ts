@@ -3,11 +3,9 @@ import { urls } from "@/constants/urls"
 import { Movie } from "@/interfaces/Movie"
 import { collection, doc, getDocs, limit, orderBy, query, setDoc, updateDoc, where } from "firebase/firestore"
 
-
 const db = firebaseConfig.db
 
-const fbMovieDb = {
-
+const fbMovieDbService = {
     updateSearchCount: async (searchTerm: string, movie: Movie) => {
         try {
             const q = query(
@@ -78,4 +76,4 @@ const fbMovieDb = {
     }
 }
 
-export default fbMovieDb
+export default fbMovieDbService

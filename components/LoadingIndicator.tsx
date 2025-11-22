@@ -1,10 +1,14 @@
 import React from 'react'
-import { ActivityIndicator, StyleSheet } from 'react-native'
+import { ActivityIndicator, ActivityIndicatorProps, StyleSheet } from 'react-native'
 
-const LoadingIndicator = () => {
+interface LoadingIndicatorProps {
+    size?: ActivityIndicatorProps['size']
+}
+
+const LoadingIndicator = ({ size = 'large' }: LoadingIndicatorProps) => {
     return (
         <ActivityIndicator
-            size="large"
+            size={size}
             color='#AB8Bff'
             style={styles.activityIndicator}
         />
@@ -15,7 +19,6 @@ export default LoadingIndicator
 
 const styles = StyleSheet.create({
     activityIndicator: {
-        marginTop: 60,
         alignSelf: 'center',
     },
 })

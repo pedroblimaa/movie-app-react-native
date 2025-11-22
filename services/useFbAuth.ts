@@ -2,6 +2,10 @@ import firebaseConfig from "@/configs/firebaseConfig"
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, User, UserCredential } from "firebase/auth"
 import { useEffect, useState } from "react"
 
+const errorMaps = {
+    'email-already-in-use': 'This email is already in use.',
+}
+
 const useFbAuth = () => {
     const [user, setUser] = useState<User | null>(null)
     const [loading, setLoading] = useState<boolean>(false)
@@ -10,23 +14,33 @@ const useFbAuth = () => {
     useEffect(() => {
         const unsubscribe = firebaseConfig.auth.onAuthStateChanged((user) => {
             setUser(user)
-            setLoading(false) // Auth state is now known
+            setLoading(false)
         })
 
-        return () => unsubscribe() // Cleanup on unmount
+        return () => unsubscribe()
     }, [])
 
     const executeWithLoading = async (authFunction: () => Promise<UserCredential | void>) => {
         try {
             setLoading(true)
+            setError(null)
             const userCredential = await authFunction()
             setUser(userCredential?.user || null)
         } catch (error) {
-            setError(error instanceof Error ? error.message : 'An error occurred')
+            if (!(error instanceof Error)) {
+                setError('An unknown error occurred')
+                return
+            }
+
+            const customMessage = errorMaps && Object.keys(errorMaps).find(key => (error as any).message.includes(key))
+            const errorMessage = customMessage
+                ? errorMaps[customMessage as keyof typeof errorMaps]
+                : 'An error occurred during authentication.'
+
+            setError(errorMessage)
         } finally {
             setLoading(false)
         }
-
     }
 
     const register = async (email: string, password: string) => {

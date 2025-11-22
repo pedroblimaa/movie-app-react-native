@@ -3,7 +3,7 @@ import { colors } from '@/constants/colors'
 import { icons } from '@/constants/icons'
 import { urls } from '@/constants/urls'
 import { IMovieDetails } from '@/interfaces/Movie'
-import tmdbApi from '@/services/tmdbApi'
+import tmdbApiService from '@/services/tmdbApiService'
 import useFetch from '@/services/useFetch'
 import { router, useLocalSearchParams } from 'expo-router'
 import React from 'react'
@@ -24,12 +24,14 @@ const MovieInfo = ({ label, value }: MovieInfoProps) => (
 
 const MovieDetails = () => {
     const { id } = useLocalSearchParams()
-    const { data: movie, loading } = useFetch<IMovieDetails>(() => tmdbApi.fetchMovieDetails(Number(id)))
+    const { data: movie, loading } = useFetch<IMovieDetails>(() => tmdbApiService.fetchMovieDetails(Number(id)))
 
     const getContent = () => {
         if (loading) {
             return (
-                <LoadingIndicator />
+                <View style={{ marginTop: 40 }}>
+                    <LoadingIndicator />
+                </View>
             )
         }
 

@@ -3,8 +3,8 @@ import MovieCard from "@/components/MovieCard"
 import SearchBar from "@/components/SearchBar"
 import { colors } from "@/constants/colors"
 import { icons } from "@/constants/icons"
-import fbMovieDb from "@/services/fbMovieDb"
-import tmdbApi from "@/services/tmdbApi"
+import fbMovieDbService from "@/services/fbMovieDbService"
+import tmdbApiService from "@/services/tmdbApiService"
 import useFetch from "@/services/useFetch"
 import React, { useEffect, useState } from 'react'
 import { ActivityIndicator, FlatList, Image, StyleSheet, Text, View } from 'react-native'
@@ -17,12 +17,12 @@ const Search = () => {
         error,
         refetch: loadMovies,
         reset
-    } = useFetch<any>(() => tmdbApi.fetchMovies(searchQuery), false)
-    fbMovieDb.getTopSearchedMovies()
+    } = useFetch<any>(() => tmdbApiService.fetchMovies(searchQuery), false)
+    fbMovieDbService.getTopSearchedMovies()
 
     useEffect(() => {
         if (movies?.length > 0) {
-            fbMovieDb.updateSearchCount(searchQuery, movies.find((movie: any) => !!movie.title))
+            fbMovieDbService.updateSearchCount(searchQuery, movies.find((movie: any) => !!movie.title))
         }
 
 
@@ -36,7 +36,7 @@ const Search = () => {
         }, 500)
 
         return () => clearTimeout(loadTimeoutFunction)
-    }, [searchQuery, loadMovies])
+    }, [searchQuery, loadMovies, movies, reset ])
 
     return (
         <View style={styles.container}>
@@ -73,7 +73,7 @@ const Search = () => {
 
                         {error && (
                             <Text style={styles.errorMsg}>
-                                Error: {error.message}
+                                Error: {error}
                             </Text>
                         )}
 

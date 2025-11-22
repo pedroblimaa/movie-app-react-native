@@ -7,7 +7,7 @@ const Saved = () => {
     return (
         <View style={styles.container}>
             <Image source={icons.save} style={{ width: 40, height: 40 }} tintColor='#fff' />
-            <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>Profile</Text>
+            <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>Saved</Text>
         </View>
     )
 }

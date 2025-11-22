@@ -3,15 +3,30 @@ import { useCallback, useEffect, useState } from "react"
 interface UseFetch<T> {
     data: T | null,
     loading: boolean,
-    error: Error | null,
+    error: string | null,
     refetch: () => void,
     reset: () => void,
 }
 
-const useFetch = <T>(fetchFunction: () => Promise<T>, autoFetch = true): UseFetch<T> => {
+const handleError = (err: Error, setError: (error: string) => void, errorMaps?: Record<string, string>) => {
+    if (!(err instanceof Error)) {
+        setError('An unknown error occurred')
+        return
+    }
+
+    const errorMessage = err.message
+    const customMessage = errorMaps && Object.keys(errorMaps).find(key => errorMessage.includes(key))
+    const finalMessage = customMessage
+        ? errorMaps[customMessage as keyof typeof errorMaps]
+        : err.message
+
+    setError(finalMessage)
+}
+
+const useFetch = <T>(fetchFunction: () => Promise<T>, autoFetch = true, errorMaps?: Record<string, string>): UseFetch<T> => {
     const [data, setData] = useState<T | null>(null)
     const [loading, setLoading] = useState<boolean>(false)
-    const [error, setError] = useState<Error | null>(null)
+    const [error, setError] = useState<string | null>(null)
 
     const reset = useCallback(() => {
         setData(null)
@@ -26,11 +41,11 @@ const useFetch = <T>(fetchFunction: () => Promise<T>, autoFetch = true): UseFetc
             const result = await fetchFunction()
             setData(result)
         } catch (err) {
-            setError(err instanceof Error ? err : new Error('An error occurred'))
+            handleError(err as Error, setError, errorMaps)
         } finally {
             setLoading(false)
         }
-    }, [fetchFunction, reset])
+    }, [fetchFunction, reset, errorMaps])
 
     useEffect(() => {
         if (autoFetch) {
