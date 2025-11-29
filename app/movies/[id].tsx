@@ -1,30 +1,39 @@
 import LoadingIndicator from '@/components/LoadingIndicator'
+import MovieInfo from '@/components/MovieInfo'
 import { colors } from '@/constants/colors'
 import { icons } from '@/constants/icons'
 import { urls } from '@/constants/urls'
-import { IMovieDetails } from '@/interfaces/Movie'
-import tmdbApiService from '@/services/tmdbApiService'
-import useFetch from '@/services/useFetch'
-import { router, useLocalSearchParams } from 'expo-router'
+import { Ionicons } from '@expo/vector-icons'
+import { router } from 'expo-router'
 import React from 'react'
-import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-
-interface MovieInfoProps {
-    label: string
-    value?: string | number | null
-}
-
-const MovieInfo = ({ label, value }: MovieInfoProps) => (
-    <View style={{ flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'center', marginTop: 20 }}>
-        <Text style={{ color: colors.light[200] }}>{label}</Text>
-        <Text style={{ color: colors.light[100], fontWeight: 'bold', marginTop: 8, fontSize: 12 }}>{value || 'N/A'}</Text>
-    </View>
-)
-
+import { Animated, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native'
+import styles from './MovieDetails.styles'
+import useMovieDetails from './useMovieDetails'
 
 const MovieDetails = () => {
-    const { id } = useLocalSearchParams()
-    const { data: movie, loading } = useFetch<IMovieDetails>(() => tmdbApiService.fetchMovieDetails(Number(id)))
+    const {
+        movie,
+        loading,
+        scaleAnim,
+        handleBookmarkPress,
+        isMovieSaved
+    } = useMovieDetails()
+
+
+
+    const saveButton = () => {
+        return (
+            <TouchableOpacity style={styles.saveIconContainer} onPress={handleBookmarkPress}>
+                <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+                    <Ionicons
+                        name={isMovieSaved ? 'bookmark' : 'bookmark-outline'}
+                        size={20}
+                        color={colors.accent}
+                    />
+                </Animated.View>
+            </TouchableOpacity>
+        )
+    }
 
     const getContent = () => {
         if (loading) {
@@ -39,6 +48,7 @@ const MovieDetails = () => {
             <>
                 <View>
                     <Image source={{ uri: `${urls.imageBaseUrl}${movie?.poster_path}` }} style={{ width: '100%', height: 450 }} resizeMode='cover' />
+                    {saveButton()}
                 </View>
 
                 <View style={styles.textView}>
@@ -56,14 +66,14 @@ const MovieDetails = () => {
                     </View>
 
                     <MovieInfo label='Overview' value={movie?.overview} />
-                    <MovieInfo label='Genres' value={movie?.genres?.map(g => g.name).join(' - ') || 'N/A'} />
+                    <MovieInfo label='Genres' value={movie?.genres?.map((g: any) => g.name).join(' - ') || 'N/A'} />
 
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '50%' }}>
                         <MovieInfo label='Budget' value={movie?.budget ? `$${(movie.budget / 1000000).toLocaleString()} million` : 'N/A'} />
                         <MovieInfo label='Revenue' value={movie?.revenue ? `$${(movie.revenue / 1000000).toLocaleString()} million` : 'N/A'} />
                     </View>
 
-                    <MovieInfo label='Production Companies' value={movie?.production_companies?.map(pc => pc.name).join(' - ') || 'N/A'} />
+                    <MovieInfo label='Production Companies' value={movie?.production_companies?.map((pc: any) => pc.name).join(' - ') || 'N/A'} />
                 </View>
 
             </>
@@ -86,40 +96,5 @@ const MovieDetails = () => {
         </View>
     )
 }
+
 export default MovieDetails
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: colors.primary,
-    },
-    textView: {
-        flexDirection: 'column',
-        alignItems: 'flex-start',
-        justifyContent: 'center',
-        marginTop: 20,
-        paddingHorizontal: 20
-    },
-    header: {
-        color: 'white',
-        fontSize: 18,
-        fontWeight: 'bold',
-    },
-    text: {
-        color: colors.light["200"],
-        fontSize: 14,
-    },
-    backButton: {
-        position: 'absolute',
-        bottom: 5,
-        left: 0,
-        marginHorizontal: 5,
-        backgroundColor: colors.accent,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderRadius: 8,
-        paddingHorizontal: 15,
-        paddingVertical: 15,
-        width: '100%',
-    }
-})

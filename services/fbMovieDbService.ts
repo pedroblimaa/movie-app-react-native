@@ -1,17 +1,25 @@
-import firebaseConfig from "@/configs/firebaseConfig"
-import { urls } from "@/constants/urls"
-import { Movie } from "@/interfaces/Movie"
-import { collection, doc, getDocs, limit, orderBy, query, setDoc, updateDoc, where } from "firebase/firestore"
+import firebaseConfig from '@/configs/firebaseConfig'
+import { urls } from '@/constants/urls'
+import { Movie } from '@/interfaces/Movie'
+import {
+    collection,
+    deleteDoc,
+    doc,
+    getDocs,
+    limit,
+    orderBy,
+    query,
+    setDoc,
+    updateDoc,
+    where
+} from 'firebase/firestore'
 
 const db = firebaseConfig.db
 
 const fbMovieDbService = {
     updateSearchCount: async (searchTerm: string, movie: Movie) => {
         try {
-            const q = query(
-                collection(db, 'metrics'),
-                where('searchTerm', '==', searchTerm)
-            )
+            const q = query(collection(db, 'metrics'), where('searchTerm', '==', searchTerm))
 
             const querySnapshot = await getDocs(q)
             const result = firebaseConfig.getQueryResult<any>(querySnapshot)
@@ -45,10 +53,10 @@ const fbMovieDbService = {
         const querySnapshot = await getDocs(docs)
         const result = firebaseConfig.getQueryResult<any>(querySnapshot)
 
-        const sortedResult = result.sort((a, b) => b.searchCount - a.searchCount).slice(0, 10).map(movie => ({ title: movie.title, searchCount: movie.searchCount }))
-        console.log('top searched movies:', sortedResult)
-
-        console.log(sortedResult.map(movie => movie.title))
+        const sortedResult = result
+            .sort((a, b) => b.searchCount - a.searchCount)
+            .slice(0, 10)
+            .map(movie => ({ title: movie.title, searchCount: movie.searchCount }))
 
         return sortedResult
     },
@@ -73,6 +81,53 @@ const fbMovieDbService = {
         })
 
         return movies.slice(0, 5)
+    },
+
+    saveUserMovie: async (movie: Movie, userId: string) => {
+        const newDocRef = doc(collection(db, 'savedMovies'))
+        await setDoc(newDocRef, {
+            movieId: movie.id,
+            title: movie.title,
+            poster_url: movie.poster_path,
+            userId
+        })
+    },
+
+    removeUserMovie: async (movie: Movie, userId: string) => {
+        const q = query(
+            collection(db, 'savedMovies'),
+            where('movieId', '==', movie.id),
+            where('userId', '==', userId),
+            limit(1)
+        )
+
+        const snapshot = await getDocs(q)
+        if (snapshot.empty) return false
+
+        const docToDelete = snapshot.docs[0]
+        await deleteDoc(doc(db, 'savedMovies', docToDelete.id))
+    },
+
+    getUserSavedMovies: async (userId: string): Promise<Partial<Movie>[]> => {
+        const q = query(collection(db, 'savedMovies'), where('userId', '==', userId))
+        const result = firebaseConfig.getQueryResult<Partial<Movie>>(await getDocs(q))
+
+        return result.map(r => ({
+            ...r,
+            id: r.id
+        }))
+    },
+
+    checkMovieIsSaved: async (movieId: number, userId?: string) => {
+        if (!userId) return
+
+        const constraints: any[] = [where('movieId', '==', movieId), where('userId', '==', userId), limit(1)]
+        const q = query(collection(db, 'savedMovies'), ...constraints)
+        const snapshot = await getDocs(q)
+
+        console.log(firebaseConfig.getQueryResult<any>(snapshot))
+
+        return !snapshot.empty
     }
 }
 
