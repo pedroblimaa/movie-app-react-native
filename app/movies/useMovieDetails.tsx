@@ -2,24 +2,33 @@ import fbMovieDbService from '@/services/fbMovieDbService'
 import tmdbApiService from '@/services/tmdbApiService'
 import useFbAuth from '@/services/useFbAuth'
 import useFetch from '@/services/useFetch'
-import { router, useLocalSearchParams } from 'expo-router'
-import { useEffect } from 'react'
+import { router, useFocusEffect, useLocalSearchParams } from 'expo-router'
+import { useCallback, useEffect, useState } from 'react'
 import { Alert, Animated } from 'react-native'
 
 const useMovieDetails = () => {
+    const [isMovieSaved, setIsMovieSaved] = useState<boolean>(false)
     const { id } = useLocalSearchParams()
     const { user } = useFbAuth()
     const { data: movie, loading } = useFetch(() => tmdbApiService.fetchMovieDetails(Number(id)))
-    const { data: isMovieSaved, refetch: getIsMovieSaved } = useFetch(
+    const { data: movieSavedData, refetch: getIsMovieSaved, loading: movieSavedLoading } = useFetch(
         () => fbMovieDbService.checkMovieIsSaved(movie?.id, user?.uid),
         false
     )
 
+    useFocusEffect(
+        useCallback(() => {
+            if (user?.uid) {
+                getIsMovieSaved()
+            }
+        }, [user])
+    )
+
     useEffect(() => {
-        if (user?.uid) {
-            getIsMovieSaved()
+        if (movieSavedData !== undefined) {
+            setIsMovieSaved(!!movieSavedData)
         }
-    }, [user])
+    }, [movieSavedData])
 
     const scaleAnim = new Animated.Value(1)
 
@@ -29,8 +38,8 @@ const useMovieDetails = () => {
             Animated.spring(scaleAnim, { toValue: 1, useNativeDriver: true })
         ]).start()
 
-
         await handleSaveMovie(!isMovieSaved)
+        setIsMovieSaved(!isMovieSaved)
         getIsMovieSaved()
     }
 
@@ -50,7 +59,7 @@ const useMovieDetails = () => {
         }
     }
 
-    return { movie, loading, scaleAnim, handleBookmarkPress, isMovieSaved }
+    return { movie, loading: loading || movieSavedLoading, scaleAnim, handleBookmarkPress, isMovieSaved }
 }
 
 export default useMovieDetails

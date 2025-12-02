@@ -1,6 +1,6 @@
 import firebaseConfig from '@/configs/firebaseConfig'
 import { urls } from '@/constants/urls'
-import { Movie } from '@/interfaces/Movie'
+import { FbSimpleMovie, Movie } from '@/interfaces/Movie'
 import {
     collection,
     deleteDoc,
@@ -108,13 +108,17 @@ const fbMovieDbService = {
         await deleteDoc(doc(db, 'savedMovies', docToDelete.id))
     },
 
-    getUserSavedMovies: async (userId: string): Promise<Partial<Movie>[]> => {
+    getUserSavedMovies: async (userId?: string): Promise<Partial<FbSimpleMovie>[]> => {
+        if(!userId) {
+            return [];
+        }
+
         const q = query(collection(db, 'savedMovies'), where('userId', '==', userId))
-        const result = firebaseConfig.getQueryResult<Partial<Movie>>(await getDocs(q))
+        const result = firebaseConfig.getQueryResult<any>(await getDocs(q))
 
         return result.map(r => ({
+            id: r.movieId,
             ...r,
-            id: r.id
         }))
     },
 
