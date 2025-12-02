@@ -1,19 +1,17 @@
-import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native'
+import { colors } from "@/constants/colors"
+import { icons } from "@/constants/icons"
+import { urls } from "@/constants/urls"
+import { Movie } from "@/interfaces/Movie"
+import { Link } from "expo-router"
 import React from 'react'
-import {Movie} from "@/interfaces/Movie";
-import {Link} from "expo-router";
-import {icons} from "@/constants/icons";
-import {colors} from "@/constants/colors";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
 interface MovieCardProps {
     movie: Movie
 }
 
-const TMDB_IMAGE_PATH = 'https://image.tmdb.org/t/p/w500'
-const PLACEHOLDER_PATH = ' https://placeholder.co/600x400/1a1a1a/ffffff.png'
-
 const MovieCard = ({movie}: MovieCardProps) => {
-    const imgUrl = movie.poster_path ? `${TMDB_IMAGE_PATH}${movie.poster_path}` : PLACEHOLDER_PATH
+    const imgUrl = movie.poster_path ? `${urls.imageBaseUrl}${movie.poster_path}` : urls.placeholderUrl
 
     return (
         <Link href={`/movies/${movie.id}`} asChild>

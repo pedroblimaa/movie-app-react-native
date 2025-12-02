@@ -14,6 +14,7 @@ const MovieDetails = () => {
     const {
         movie,
         loading,
+        savedLoading,
         scaleAnim,
         handleBookmarkPress,
         isMovieSaved
@@ -36,7 +37,7 @@ const MovieDetails = () => {
     }
 
     const getContent = () => {
-        if (loading) {
+        if (loading || savedLoading ) {
             return (
                 <View style={{ marginTop: 40 }}>
                     <LoadingIndicator />

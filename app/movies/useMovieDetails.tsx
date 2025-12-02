@@ -2,24 +2,35 @@ import fbMovieDbService from '@/services/fbMovieDbService'
 import tmdbApiService from '@/services/tmdbApiService'
 import useFbAuth from '@/services/useFbAuth'
 import useFetch from '@/services/useFetch'
-import { router, useLocalSearchParams } from 'expo-router'
-import { useEffect } from 'react'
+import { router, useFocusEffect, useLocalSearchParams } from 'expo-router'
+import { useCallback, useEffect, useState } from 'react'
 import { Alert, Animated } from 'react-native'
 
 const useMovieDetails = () => {
+    const [savedLoading, setSavedLoading] = useState<boolean>(true)
+    const [isMovieSaved, setIsMovieSaved] = useState<boolean>(false)
     const { id } = useLocalSearchParams()
     const { user } = useFbAuth()
     const { data: movie, loading } = useFetch(() => tmdbApiService.fetchMovieDetails(Number(id)))
-    const { data: isMovieSaved, refetch: getIsMovieSaved } = useFetch(
+    const { data: movieSavedData, refetch: getIsMovieSaved } = useFetch(
         () => fbMovieDbService.checkMovieIsSaved(movie?.id, user?.uid),
         false
     )
 
+    useFocusEffect(
+        useCallback(() => {
+            if (user?.uid) {
+                getIsMovieSaved()
+            }
+        }, [user?.uid, getIsMovieSaved])
+    )
+
     useEffect(() => {
-        if (user?.uid) {
-            getIsMovieSaved()
+        if (typeof movieSavedData === 'boolean') {
+            setIsMovieSaved(!!movieSavedData)
+            setSavedLoading(false)
         }
-    }, [user])
+    }, [movieSavedData])
 
     const scaleAnim = new Animated.Value(1)
 
@@ -29,12 +40,11 @@ const useMovieDetails = () => {
             Animated.spring(scaleAnim, { toValue: 1, useNativeDriver: true })
         ]).start()
 
-
+        setIsMovieSaved(!isMovieSaved)
         await handleSaveMovie(!isMovieSaved)
         getIsMovieSaved()
     }
 
-    // TODO: Improve logic so that feedback ins instant when saving/unsaving movie
     const handleSaveMovie = async (save = true) => {
         if (!user) {
             return Alert.alert('You need to sign in', 'Log in to save movies to your account.', [
@@ -50,7 +60,7 @@ const useMovieDetails = () => {
         }
     }
 
-    return { movie, loading, scaleAnim, handleBookmarkPress, isMovieSaved }
+    return { movie, loading, savedLoading, scaleAnim, handleBookmarkPress, isMovieSaved }
 }
 
 export default useMovieDetails

@@ -15,6 +15,12 @@ export interface Movie {
     vote_count: number
 }
 
+export interface FbSimpleMovie {
+    id: number,
+    title: string,
+    poster_url: string,
+}
+
 export interface Genre {
     id: number;
     name: string;
