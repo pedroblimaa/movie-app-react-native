@@ -1,31 +1,47 @@
-# MovieFlix
+# 🍿 MovieFlix
 
-A React Native movie app built with Expo Router and Firebase.
+A React Native movie app for browsing, searching, and saving your favorite films, built with Expo and Firebase.
 
-## Features
+## ✨ Features
 
-- Browse and search movies
-- Movie details page
-- Firebase integration for tracking top searches
-- Tab-based navigation
+- 🎬 Browse popular movies from The Movie Database (TMDB).
+- 🔍 Search for movies by title.
+- 👤 User authentication with Firebase.
+- 💾 Save movies to a personal watchlist.
+- 📱 Cross-platform for iOS and Android.
 
-## Setup
+## 🚀 Tech Stack
 
-1. Create a `.env` file with your keys:
-   ```
-   EXPO_PUBLIC_MOVIE_API_KEY=your_api_key_here
-   EXPO_FIREBASE_API_KEY=your_firebase_api_key_here
-   ```
+React Native, Expo, TypeScript, Firebase, TMDB API, Expo Router.
 
-2. Install dependencies and start:
-   ```bash
-   npm install
-   npm start
-   ```
+## 🛠️ Getting Started
 
-## Tech Stack
+1.  **Clone & Install:**
+    ```bash
+    git clone https://github.com/your-username/movie-app.git
+    cd movie-app
+    npm install
+    ```
 
-- React Native + Expo
-- Expo Router (file-based routing)
-- Firebase
-- TypeScript
+2.  **Set up Environment Variables:**
+    Create a `.env` file in the root directory with the following content:
+
+    ```bash
+    EXPO_PUBLIC_MOVIE_API_KEY="YOUR_TMDB_API_KEY"
+    EXPO_PUBLIC_FIREBASE_API_KEY="YOUR_FIREBASE_API_KEY"
+    ```
+
+3.  **Run the App:**
+    ```bash
+    npm start
+    ```
+
+## 📜 Available Scripts
+
+- `npm start`: Runs the app in development mode.
+- `npm run android`: Runs the app on an Android device/emulator.
+- `npm run ios`: Runs the app on an iOS simulator.
+- `npm run web`: Runs the app in a web browser.
+- `npm run lint`: Lints the code.
+
+---
